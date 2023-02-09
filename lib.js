@@ -309,7 +309,7 @@ async function createServer({
             if (value === null) return json({ status: 401, data: `用户认证失败` });
             if (value !== token) return json({ status: 401, data: `用户认证失败` });
             if (inRange(x, 0, width) && inRange(y, 0, height) && inRange(color, 0, COLOR.length)) {
-                lastPaint.set(uid, Date.now());
+                if (!noRestrict)lastPaint.set(uid, Date.now());
                 await paintQueue.push({
                     x, y, color, log
                 });
