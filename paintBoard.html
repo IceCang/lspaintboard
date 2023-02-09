@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1 user-scalable=no">
-    <title>Segon Paintboard</title>
+    <title>LS Paintboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/amazeui@2/dist/css/amazeui.min.css">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
             integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
@@ -70,7 +70,7 @@
 <header class="am-topbar am-topbar-fixed-top">
     <div class="am-container">
         <h1 class="am-topbar-brand">
-            <a href="#">Segon 冬日绘板</a>
+            <a href="#">LS 冬日绘板</a>
         </h1>
         <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-secondary am-show-sm-only"
                 data-am-collapse="{target: '#collapse-head'}"><span class="am-sr-only">导航切换</span> <span
@@ -118,7 +118,7 @@
                         活动时间: <span id="activity-time-start"></span> ~ <span id="activity-time-end"></span> <span
                             id="activity-reminder"></span><br>
                         活动规则: 未被禁言、已认证手机、注册时间在 2022/12/01 前的洛谷用户可参与。每个用户 30 秒可涂鸦一个点，可随意覆盖任何区域。<br>
-                        参与方式: 在 LuoguUid 中输入你的洛谷 uid, 新建一个剪贴板并<b>只输入</b> SegonPaintBoard_LuoguLike 后公开保存。将您的剪贴板
+                        参与方式: 在 LuoguUid 中输入你的洛谷 uid, 新建一个剪贴板并<b>只输入</b> LSPaintBoard 后公开保存。将您的剪贴板
                         Url 中最后一串八位字符输入到 LuoguPaste 中后点击获取 Token。如果以后您想绘画输入 Token 与 uid 即可。请妥善保存 Token，因为它在你刷新页面后就会消失。
                     </p>
                     <p>禁止绘制违反法律、社会公德的图形，否则将被清除且上报网警。请大家组团时不要分享自己的 cookie，而是使用分享 Token 这种更安全的方式。分享 cookie
@@ -226,7 +226,7 @@
             x: x,
             y: y,
             color: nowcolor,
-            uid: document.getElementById('uid').value.toString,
+            uid: document.getElementById('uid').value.toString(),
             token: document.getElementById('token').value
         }, function (resp) {
             if (resp.status !== 200) {
@@ -239,7 +239,7 @@
     })
     $('#reset-token').bind("click", function () {
         $.post("/paintboard/gettoken", {
-            uid: document.getElementById('uid').value.toString,
+            uid: document.getElementById('uid').value.toString(),
             paste: document.getElementById('paste').value
         }, function (resp) {
             if (resp.status !== 200) {
@@ -255,7 +255,7 @@
             dragged = 1;
         }
     });
-    $('#mycanvas').bind("mousewheel", function (event, delta) {
+    $('#mycanvas').bind("mousewheel", function (event) {
         var delta = event.originalEvent.deltaY;
         var y = parseInt(event.offsetY / scale);
         var x = parseInt(event.offsetX / scale);
@@ -340,7 +340,7 @@
                     update(y, x, colorlist[parseInt(color, 32)]);
                 });
             });
-            $('#title').text('Segon（仿洛谷）冬日绘板');
+            $('#title').text('LS（仿洛谷）冬日绘板');
         });
     }
 
