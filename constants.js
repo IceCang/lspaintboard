@@ -7,5 +7,5 @@ module.exports = {
     ast: 1672502400,
     aet: 1672848000,
     year: 2024,
-    path: '/home/lspaintboard'
+    path: '[Your Path]'
 };
