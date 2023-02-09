@@ -262,6 +262,7 @@ async function createServer({
     }
 
     async function saveBoard() {
+        if (Date.now()>aet)return;
         let result = '';
         board.forEach((column) => { result += column.join(''); result += '\n'; });
         if (Date.now() < ast * 1000) return;
