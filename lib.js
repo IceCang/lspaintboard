@@ -12,7 +12,7 @@ const cheerio = require("cheerio")
 const { MongoClient } = require('mongodb')
 const Https = require('https')
 const url = "mongodb://localhost:27017"
-const uuidv4 = require('uuid/v4')
+const uuidv4 = require('uuid').v4
 
 const client = new MongoClient(url)
 
