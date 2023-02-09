@@ -196,7 +196,7 @@ async function createServer({
                     return
                 }
                 const text = res.currentData.paste.data;
-                const user = res.currentData.paste.user.uid;
+                const user = res.currentData.paste.user.uid.toString();
                 const color = res.currentData.paste.user.color;
                 if (text !== VERIFY_TEXT || user !== uid || (!(color === "Blue" || color === "Green" || color === "Orange" || color === "Red" || color === "Purple"))) {
                     userValid = 402;
