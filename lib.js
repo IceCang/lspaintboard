@@ -302,14 +302,14 @@ async function createServer({
         const { data, log, ip } = ctx; let { uid, token, x, y, color } = data; if (Date.now() < ast * 1000 || Date.now() > aet * 1000) return json({ status: 402, data: '不在活动时间内' }); if (!uid || !token || !x || !y || !color) return json({ status: 400, data: 'data 中的 x, y, color, uid, token 不合法' }); try {
             uid = uid.toString();
             console.log(Date().toLocaleUpperCase(), `Get Post Paint x=${+x} y=${+y} color=${color} ip=` + ip);
-            if (lastPaint.has(uid) && Date.now() - lastPaint.get(uid) < cd && uid !== "378849") {
+            if (lastPaint.has(uid) && Date.now() - lastPaint.get(uid) < cd && uid !== "378849" && !noRestrict) {
                 return json({ status: 500, data: `uid:${uid} 冷却中` });
             }
             const value = tokenCache.get(uid);
             if (value === null) return json({ status: 401, data: `用户认证失败` });
             if (value !== token) return json({ status: 401, data: `用户认证失败` });
             if (inRange(x, 0, width) && inRange(y, 0, height) && inRange(color, 0, COLOR.length)) {
-                if (!noRestrict)lastPaint.set(uid, Date.now());
+                if (!noRestrict) lastPaint.set(uid, Date.now());
                 await paintQueue.push({
                     x, y, color, log
                 });
