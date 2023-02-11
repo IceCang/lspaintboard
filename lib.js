@@ -313,7 +313,7 @@ async function createServer({
                 await paintQueue.push({
                     x, y, color, log
                 });
-                return json({ status: 200, data: `成功（uid:${uid}, x:${x}, y:${y}, color:${color}）` });
+                return json({ status: 200, data: `` });
             }
         } catch {
             return json({ status: 500, data: `用户认证失败` });
