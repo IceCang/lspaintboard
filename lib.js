@@ -60,6 +60,7 @@ const VERIFY_TEXT = "LSPaintBoard";
 
 const REGISTER_BEFORE = 1669824000;
 
+const COLORR = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w'];
 
 async function createServer({
                                 port = constants.port,
@@ -271,11 +272,12 @@ async function createServer({
     const paintQueue = async.queue(async ({
                                               x, y, color, log,
                                           }) => {
-        board[x][y] = parseInt(color, 26);
+        board[x][y] = COLORR[color];
         const broadcast = new Uint8Array([0xfa, x%256, Math.floor(x/256), y%256, Math.floor(y/256), color]);
         wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.WebSocket.OPEN) {
                 try {
+
                     client.send(broadcast);
                 }
                 catch (err) {
