@@ -128,9 +128,9 @@ async function createServer({
             console.log("Get Websocket Connection: ", req.connection.remoteAddress)
             ws.on('message', (message) => {
                 try {
-                    const msg = JSON.parse(message);
+                    const msg = new Uint8Array(message);
                     console.log(msg)
-                    if (msg.type === 'join_channel' && msg.channel === 'paintboard') {
+                    if (msg[0] === 0xff) {
                         ws.send(new Uint8Array([0xfc]));
                     }
                     else {

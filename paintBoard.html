@@ -354,14 +354,10 @@
             alert("无法连接追踪服务器");
             return;
         }
-
+        ws.binaryType = "arraybuffer";
         ws.onopen = function () {
-            var message = {
-                "type": "join_channel",
-                "channel": "paintboard",
-                "channel_param": ""
-            };
-            ws.send(JSON.stringify(message));
+            const message = new Uint8Array([0xff]);
+            ws.send(message);
         };
 
         ws.onmessage = function (event) {
