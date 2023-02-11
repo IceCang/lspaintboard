@@ -365,12 +365,19 @@
         };
 
         ws.onmessage = function (event) {
-            var data = JSON.parse(event.data);
-            if (data.type === "paintboard_update") {
-                update(data.y, data.x, colorlist[data.color]);
-            } else if (data.type === "result") {
-                initialPaint()
-            }
+               const raw_message = new Uint8Array(event.data);
+               const [type, data] = [raw_message[0], raw_message.slice(1)];
+               switch (type){
+                   case 0xfa:
+                       const x = data[0] * 0xff + data[1];
+                       const y = data[2] * 0xff + data[3];
+                       const color = data[4];
+                       update(y, x, colorlist[color]);
+                       break
+                   case 0xfc:
+                       initialPaint()
+                       break
+               }
         };
     }
 
