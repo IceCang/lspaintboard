@@ -246,6 +246,8 @@
                 alert(resp.data)
             } else {
                 document.getElementById('token').value = resp.data;
+                localStorage.setItem('token',resp.data)
+                localStorage.setItem('uid',$('#uid').value)
             }
         });
     });
@@ -392,6 +394,8 @@
                 $$.html('(活动已结束)');
             }
         }, 1000);
+        $('#token').value(localStorage.getItem('token'))
+        $('#uid').value(localStorage.getItem('uid'))
     })();
 </script>
 </body>
