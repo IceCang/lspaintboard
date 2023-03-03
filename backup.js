@@ -18,40 +18,40 @@ const client = new MongoClient(url)
 
 const { get, post } = servert.router;
 
-// const COLOR = [
-//     [0, 0, 0],
-//     [255, 255, 255],
-//     [170, 170, 170],
-//     [85, 85, 85],
-//     [254, 211, 199],
-//     [255, 196, 206],
-//     [250, 172, 142],
-//     [255, 139, 131],
-//     [244, 67, 54],
-//     [233, 30, 99],
-//     [226, 102, 158],
-//     [156, 39, 176],
-//     [103, 58, 183],
-//     [63, 81, 181],
-//     [0, 70, 112],
-//     [5, 113, 151],
-//     [33, 150, 243],
-//     [0, 188, 212],
-//     [59, 229, 219],
-//     [151, 253, 220],
-//     [22, 115, 0],
-//     [55, 169, 60],
-//     [137, 230, 66],
-//     [215, 255, 7],
-//     [255, 246, 209],
-//     [248, 203, 140],
-//     [255, 235, 59],
-//     [255, 193, 7],
-//     [255, 152, 0],
-//     [255, 87, 34],
-//     [184, 63, 39],
-//     [121, 85, 72],
-// ];
+const COLOR = [
+    [0, 0, 0],
+    [255, 255, 255],
+    [170, 170, 170],
+    [85, 85, 85],
+    [254, 211, 199],
+    [255, 196, 206],
+    [250, 172, 142],
+    [255, 139, 131],
+    [244, 67, 54],
+    [233, 30, 99],
+    [226, 102, 158],
+    [156, 39, 176],
+    [103, 58, 183],
+    [63, 81, 181],
+    [0, 70, 112],
+    [5, 113, 151],
+    [33, 150, 243],
+    [0, 188, 212],
+    [59, 229, 219],
+    [151, 253, 220],
+    [22, 115, 0],
+    [55, 169, 60],
+    [137, 230, 66],
+    [215, 255, 7],
+    [255, 246, 209],
+    [248, 203, 140],
+    [255, 235, 59],
+    [255, 193, 7],
+    [255, 152, 0],
+    [255, 87, 34],
+    [184, 63, 39],
+    [121, 85, 72],
+];
 
 
 const constants = require('./constants');
@@ -60,7 +60,7 @@ const VERIFY_TEXT = "LSPaintBoard";
 
 const REGISTER_BEFORE = 1669824000;
 
-// const COLORR = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w'];
+const COLORR = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w'];
 
 async function createServer({
                                 port = constants.port,
@@ -75,20 +75,18 @@ async function createServer({
                                 resetBoard = false,
                             } = {}) {
     let saved;
-    let board; //RRGGBB
+    let board;
     function genBoard(data){
         data = data.toString()
         let boardT = new Array(width).fill('0').map(() => new Array(height).fill(''));
         data.split('\n').map(function (colorStr, x) {
-            for (let i = 0; i < height; i++) {
-                for (let j = 0; j < 6; j++) {
-                    boardT[x][i] += colorStr[i*6+j];
-                }
-            }
+            colorStr.split("").map(function (color, y) {
+                boardT[x][y] = color;
+
+            });
         });
         return boardT
     }
-
     if (resetBoard) {
         board = await fs.readFile(path.resolve(constants.path, 'Default.txt'))
             .then((data) => genBoard(data));
@@ -180,7 +178,7 @@ async function createServer({
             const uid = ctx.data.uid.toString();
             const paste = ctx.data.paste;
             if (lastToken.has(uid) && Date.now() - lastToken.get(uid) < 300000) {
-                return response(403, `uid:${uid} 冷却中`);
+                return response(500, `uid:${uid} 冷却中`);
             }
             await axios.get(`https://www.luogu.com.cn/paste/${paste}`).then(resp => {
                 //
@@ -201,7 +199,7 @@ async function createServer({
                 const user = res.currentData.paste.user.uid.toString();
                 const color = res.currentData.paste.user.color;
                 if (text !== VERIFY_TEXT || user !== uid || (!(color === "Blue" || color === "Green" || color === "Orange" || color === "Red" || color === "Purple"))) {
-                    userValid = 401;
+                    userValid = 402;
                     message = "用户认证失败"; lastToken.set(uid, Date.now());
                 }
             }).catch((err) => {
@@ -217,14 +215,14 @@ async function createServer({
                     res = JSON.parse(res)
                 }
                 catch (err) {
-                    userValid = 401;
+                    userValid = 403;
                     message = "用户认证失败";
                     lastToken.set(uid, Date.now());
                     return
                 }
                 const registerTime = res.currentData.user.registerTime;
                 if (registerTime >= REGISTER_BEFORE) {
-                    userValid = 401;
+                    userValid = 404;
                     message = "用户认证失败"; lastToken.set(uid, Date.now());
                 }
             }).catch((err) => {
@@ -252,7 +250,7 @@ async function createServer({
             return response(200, token)
 
         }
-        return response(400, `传入参数不合法`)
+        return response(500, `传入参数不合法`)
 
     }
 
@@ -274,11 +272,12 @@ async function createServer({
     const paintQueue = async.queue(async ({
                                               x, y, color, log,
                                           }) => {
-        board[x][y] = color;
-        const broadcast = new Uint8Array([0xfa, x%256, Math.floor(x/256), y%256, Math.floor(y/256), parseInt(color.slice(0,2),16), parseInt(color.slice(2,4),16), parseInt(color.slice(4,6),16)]);
+        board[x][y] = COLORR[color];
+        const broadcast = new Uint8Array([0xfa, x%256, Math.floor(x/256), y%256, Math.floor(y/256), color]);
         wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.WebSocket.OPEN) {
                 try {
+
                     client.send(broadcast);
                 }
                 catch (err) {
@@ -295,29 +294,24 @@ async function createServer({
     });
 
     async function paint(ctx) {
-        const { data, log, ip } = ctx; let { uid, token, x, y, color } = data; if (Date.now() < ast * 1000 || Date.now() > aet * 1000) return status(403).json({ status: 403, data: '不在活动时间内' }); if (!uid || !token || !x || !y || !color) return status(400).json({ status: 400, data: 'data 中的 x, y, color, uid, token 不合法' });
-        try {
+        const { data, log, ip } = ctx; let { uid, token, x, y, color } = data; if (Date.now() < ast * 1000 || Date.now() > aet * 1000) return json({ status: 402, data: '不在活动时间内' }); if (!uid || !token || !x || !y || !color) return json({ status: 400, data: 'data 中的 x, y, color, uid, token 不合法' }); try {
             uid = uid.toString();
             console.log(Date().toLocaleUpperCase(), `Get Post Paint x=${+x} y=${+y} color=${color} ip=` + ip);
             if (lastPaint.has(uid) && Date.now() - lastPaint.get(uid) < cd && uid !== "378849" && !noRestrict) {
-                return status(412).json({ status: 412, data: `uid:${uid} 冷却中` });
+                return json({ status: 500, data: `uid:${uid} 冷却中` });
             }
             const value = tokenCache.get(uid);
-            if (value === null) return status(401).json({ status: 401, data: `用户认证失败` });
-            if (value !== token) return status(401).json({ status: 401, data: `用户认证失败` });
-            if (inRange(x, 0, width) && inRange(y, 0, height) && color.length === 6) {
-                for(let i = 0; i < 6; i++){
-                    if(color[i]<'0'||(color[i]>'9'&&color[i]<'a')||color[i]>'f') return status(400).json({ status: 402, data: `格式错误`});
-                }
+            if (value === null) return json({ status: 401, data: `用户认证失败` });
+            if (value !== token) return json({ status: 401, data: `用户认证失败` });
+            if (inRange(x, 0, width) && inRange(y, 0, height) && inRange(color, 0, COLOR.length)) {
                 if (!noRestrict) lastPaint.set(uid, Date.now());
                 await paintQueue.push({
                     x, y, color, log
                 });
-                return status(200).json({ status: 200, data: `` });
+                return json({ status: 200, data: `` });
             }
-            return status(400).json({ status: 400, data: `格式错误`})
         } catch {
-            return status(500).json({ status: 500, data: `我不知道发生了啥，但是绘画失败` });
+            return json({ status: 500, data: `用户认证失败` });
         }
     }
 

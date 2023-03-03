@@ -36,21 +36,11 @@
             background: #2d3e50;
         }
 
-        .paleitem {
-            margin: 5px;
-            width: 20px;
-            height: 20px;
-            border-radius: 3px;
-            background: #66ccff;
-            display: inline-block;
-            cursor: pointer;
-        }
-
         #palette {
             padding: 10px;
             background: #7f7f7f;
             margin: 10px;
-            width: 500px;
+            width: auto;
             color: #fff;
         }
 
@@ -90,8 +80,8 @@
                     <canvas width=$5width height=$5height id='mycanvas'>
                     </canvas>
                 </div>
-                <div class="am-u-lg-8" id='palette'>Loading...</div>
-                <div class="am-u-lg-4" id='zoom-tool'>
+                <div class="am-u-lg-7" id='palette'><span>选色</span><input type="color" id="select-color"></div>
+                <div class="am-u-lg-5" id='zoom-tool'>
                     <button type="button" class="am-btn am-btn-primary am-radius" zoom=1>全部显示</button>
                     <button type="button" class="am-btn am-btn-secondary am-radius" zoom=5>放大5x</button>
                     <button type="button" class="am-btn am-btn-success am-radius" zoom=10>放大10x</button>
@@ -102,9 +92,7 @@
                         &nbsp;&nbsp;<input type="text"
                                            style="height:37.1593px; font-family: monospace; flex: 1; font-size: .875em;"
                                            placeholder="LuoguPaste" id="paste">
-                    </div>
-                    <div style="display: inline-flex;margin: 1em 0; width: 100%;">
-                        <input type="text" style="font-family: monospace; flex: 1; font-size: .875em;"
+                        &nbsp;&nbsp;<input type="text" style="font-family: monospace; flex: 1; font-size: .875em;"
                                placeholder="Token" id="token">
                         <button type="button" class="am-btn am-btn-danger am-radius"
                                 id="reset-token">更新Token</button>
@@ -123,9 +111,7 @@
                     </p>
                     <p>禁止绘制违反法律、社会公德的图形，否则将被清除且上报网警。请大家组团时不要分享自己的 cookie，而是使用分享 Token 这种更安全的方式。分享 cookie
                         等同于分享账号，他人可以使用您的 cookie 在洛谷以您的名义进行任何操作。</p>
-                    <p>绘画的 post 地址为 /paintboard/paint, 传入五个参数: x, y, color, uid, token, 其中 x, y, color 的定义与洛谷相同，uid,
-                        token 的定义见上。</p>
-                    <p>本页面来源于<a href="https://www.luogu.com.cn/paintboard" target="_blank">官方绘板页面</a>。</p>
+                    <p>本页面部分来源于<a href="https://www.luogu.com.cn/paintboard" target="_blank">官方绘板页面</a>。</p>
                 </div>
             </div>
         </div>
@@ -134,15 +120,14 @@
 <script>
     H = $height;
     W = $width;
-    nowcolor = 0;
     scale = 5;
     dragged = 0;
     lasttime = 0;
     timelimit = $cd / 1000;
     activityStartTime = $ast;
     activityEndTime = $aet;
-    colorlist = ['rgb(0, 0, 0)', 'rgb(255, 255, 255)', 'rgb(170, 170, 170)', 'rgb(85, 85, 85)', 'rgb(254, 211, 199)', 'rgb(255, 196, 206)', 'rgb(250, 172, 142)', 'rgb(255, 139, 131)', 'rgb(244, 67, 54)', 'rgb(233, 30, 99)', 'rgb(226, 102, 158)', 'rgb(156, 39, 176)', 'rgb(103, 58, 183)', 'rgb(63, 81, 181)', 'rgb(0, 70, 112)', 'rgb(5, 113, 151)', 'rgb(33, 150, 243)', 'rgb(0, 188, 212)', 'rgb(59, 229, 219)', 'rgb(151, 253, 220)', 'rgb(22, 115, 0)', 'rgb(55, 169, 60)', 'rgb(137, 230, 66)', 'rgb(215, 255, 7)', 'rgb(255, 246, 209)', 'rgb(248, 203, 140)', 'rgb(255, 235, 59)', 'rgb(255, 193, 7)', 'rgb(255, 152, 0)', 'rgb(255, 87, 34)', 'rgb(184, 63, 39)', 'rgb(121, 85, 72)'];
     nowintevel = 0;
+    nowColor = "#000000";
     var myarr = [];
     for (var i = 0; i < H; i++) {
         myarr[i] = [];
@@ -175,21 +160,6 @@
         ctx.fillRect(x * 5, y * 5, 5, 5);
     }
 
-    function initpale() {
-        $('#palette').html('');
-        colorlist.forEach(function (k, v) {
-            console.log(k, v);
-            $('#palette').append('<div class="paleitem" data-cid=' + v + '></div>');
-            $('[data-cid=' + v + ']').css('background', k);
-        });
-        zoom(1)
-    }
-
-    binditem = function () {
-        $('.paleitem').removeClass("selected");
-        $(this).addClass("selected");
-        nowcolor = $(this).attr('data-cid');
-    }
     zoom = function (s) {
         scale = s;
         $('#mycanvas').width(W * scale)
@@ -201,6 +171,9 @@
     $("[zoom]").click(function () {
         zoom($(this).attr('zoom'));
     });
+    $('.select-color').bind("change", (evt) => {
+        nowColor = evt.currentTarget.value;
+    })
     // myarr[10][10] = '#6600ff';
     // myarr[100][200] = '#66ccff';
     render(myarr);
@@ -220,12 +193,12 @@
         update(
             y,
             x,
-            colorlist[nowcolor]
+            nowColor
         );
         $.post("/paintboard/paint", {
             x: x,
             y: y,
-            color: nowcolor,
+            color: nowColor.slice(1,7),
             uid: document.getElementById('uid').value.toString(),
             token: document.getElementById('token').value
         }, function (resp) {
@@ -367,8 +340,10 @@
                    case 0xfa: {
                        const x = data[1] * 0xff + data[0];
                        const y = data[3] * 0xff + data[2];
-                       const color = data[4];
-                       update(y, x, colorlist[color]);
+                       const colorR = data[4];
+                       const colorG = data[5];
+                       const colorB = data[6];
+                       update(y, x, colorR.toString(16), colorG.toString(16), colorB.toString(16));
                        break;
                    }
                    case 0xfc: {
