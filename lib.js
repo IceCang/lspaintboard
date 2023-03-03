@@ -295,29 +295,29 @@ async function createServer({
     });
 
     async function paint(ctx) {
-        const { data, log, ip } = ctx; let { uid, token, x, y, color } = data; if (Date.now() < ast * 1000 || Date.now() > aet * 1000) return status(403).json({ status: 403, data: '不在活动时间内' }); if (!uid || !token || !x || !y || !color) return status(400).json({ status: 400, data: 'data 中的 x, y, color, uid, token 不合法' });
+        const { data, log, ip } = ctx; let { uid, token, x, y, color } = data; if (Date.now() < ast * 1000 || Date.now() > aet * 1000) return json({ status: 403, data: '不在活动时间内' }); if (!uid || !token || !x || !y || !color) return json({ status: 400, data: 'data 中的 x, y, color, uid, token 不合法' });
         try {
             uid = uid.toString();
             console.log(Date().toLocaleUpperCase(), `Get Post Paint x=${+x} y=${+y} color=${color} ip=` + ip);
             if (lastPaint.has(uid) && Date.now() - lastPaint.get(uid) < cd && uid !== "378849" && !noRestrict) {
-                return status(412).json({ status: 412, data: `uid:${uid} 冷却中` });
+                return json({ status: 412, data: `uid:${uid} 冷却中` });
             }
             const value = tokenCache.get(uid);
-            if (value === null) return status(401).json({ status: 401, data: `用户认证失败` });
-            if (value !== token) return status(401).json({ status: 401, data: `用户认证失败` });
+            if (value === null) return json({ status: 401, data: `用户认证失败` });
+            if (value !== token) return json({ status: 401, data: `用户认证失败` });
             if (inRange(x, 0, width) && inRange(y, 0, height) && color.length === 6) {
                 for(let i = 0; i < 6; i++){
-                    if(color[i]<'0'||(color[i]>'9'&&color[i]<'a')||color[i]>'f') return status(400).json({ status: 402, data: `格式错误`});
+                    if(color[i]<'0'||(color[i]>'9'&&color[i]<'a')||color[i]>'f') return json({ status: 402, data: `格式错误`});
                 }
                 if (!noRestrict) lastPaint.set(uid, Date.now());
                 await paintQueue.push({
                     x, y, color, log
                 });
-                return status(200).json({ status: 200, data: `` });
+                return json({ status: 200, data: `` });
             }
-            return status(400).json({ status: 400, data: `格式错误`})
+            return json({ status: 400, data: `格式错误`})
         } catch {
-            return status(500).json({ status: 500, data: `我不知道发生了啥，但是绘画失败` });
+            return json({ status: 500, data: `我不知道发生了啥，但是绘画失败` });
         }
     }
 
