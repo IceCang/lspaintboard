@@ -308,10 +308,9 @@
         console.log(0)
         $.get("/paintboard/board", function (resp) {
             resp.split('\n').map(function (colorStr, x) {
-                colorStr.split("").map(function (color, y) {
-                    //if(color !== '2') console.log(x, y, color);
-                    update(y, x, colorlist[parseInt(color, 32)]);
-                });
+                for(let i = 0; i < 600; i++){
+                    update(i, x, colorStr.slice(i*6, i*6+6))
+                }
             });
             $('#title').text('LS（仿洛谷）冬日绘板');
         });
