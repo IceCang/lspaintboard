@@ -309,7 +309,7 @@
         $.get("/paintboard/board", function (resp) {
             resp.split('\n').map(function (colorStr, x) {
                 for(let i = 0; i < 600; i++){
-                    update(i, x, colorStr.slice(i*6, i*6+6))
+                    update(i, x, "#" + colorStr.slice(i*6, i*6+6))
                 }
             });
             $('#title').text('LS（仿洛谷）冬日绘板');
@@ -340,7 +340,7 @@
                        const colorR = data[4];
                        const colorG = data[5];
                        const colorB = data[6];
-                       update(y, x, colorR.toString(16), colorG.toString(16), colorB.toString(16));
+                       update(y, x, "#" + colorR.toString(16) + colorG.toString(16) + colorB.toString(16));
                        break;
                    }
                    case 0xfc: {
